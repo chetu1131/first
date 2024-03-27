@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+  </head>
+  <style>
+    .main {
+      width: 600px;
+      padding: 60px;
+      background-color: lightcyan;
+      margin-top: 100px;
+    }
+    form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    td {
+      padding: 10px;
+    }
+    h2 {
+      text-align: center;
+    }
+    #register,
+    p {
+      background-color: black;
+      text-align: center;
+      color: white;
+      width: fit-content;
+      height: 20px;
+      border: 2px solid black;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    a {
+      text-decoration: none;
+    }
+  </style>
+  <body>
+    <form id="form" name="form" method="post" action="" autocomplete="on">
+      <div class="main">
+        <h2>Forgot Password</h2>
+        <table>
+          <tr>
+            <td>
+              Email:<input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p id="register" onclick="return validateform()">Forgot Password</p>
+            </td>
+            <td>
+              <div id="notvalid"></div>
+            </td>
+          </tr>
+          <tr>
+            <td>
+                <a
+                  class="acivatelink"
+                  id="acivatelink"
+                  style="display: none"
+                  onclick="valid_email()"
+                >
+                </a>
+              </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </body>
+  <script>
+    var active = document.getElementById("acivatelink");
+
+    async function valid_email() {
+      var email = document.getElementById("email").value;
+      var result = await fetch("http://localhost:8000/checkemail/" + email);
+      result = await result.json();
+      if (result != true) {
+        document.getElementById("notvalid").innerHTML = "email not exists";
+      } else {
+        document.getElementById("notvalid").innerHTML = "";
+
+        active.style.display = "block";
+        const form = document.getElementById("form");
+        const obj = new URLSearchParams(new FormData(form));
+        let result1 = await fetch("/getemail", {
+          method: "POST",
+          body: obj,
+        });
+
+        result1 = await result1.json();
+
+        console.log(result1);
+
+        active.setAttribute(
+          "href",
+          "http://localhost:8000/forgotpass2/?code=" + result1.code
+        );
+        active.innerHTML =
+          "Your Activation for password: " +
+          "http://localhost:8000/forgotpass2/?code=" +
+          result1.code;
+      }
+
+      console.log(result);
+    }
+    // onsubmit give token link to front end
+    function validateform() {
+      var emailval = document.getElementById("email").value;
+      if (emailval == null || emailval == "") {
+        alert("email required");
+        return false;
+      }
+
+      valid_email();
+    }
+  </script>
+</html>

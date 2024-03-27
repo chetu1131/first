@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <title>Events in Javascript day 01-02-2024</title>
+
+    <style>
+      table {
+        margin: auto;
+      }
+      table,
+      tr,
+      td {
+        border: 2px solid black;
+      }
+      tr:nth-child(odd) > td:nth-child(even) {
+        background-color: rgb(139, 107, 89);
+      }
+      tr:nth-child(even) > td:nth-child(odd) {
+        background-color: rgb(65, 140, 190);
+      }
+    </style>
+  </head>
+
+  <body style="text-align: center">
+    <h3>01-02-2024 - Dynamic Table - Parmar Parmeshvar</h3>
+    <button onclick="deleteRow()">Delete Row</button>
+    <button onclick="deleteColumn()">Delete Column</button>
+    <button onclick="appendRow()">Add Row</button>
+    <button onclick="appendColumn()">Add Column</button>
+    <br />
+    <br />
+    <table id="table1" cellpadding="40">
+      <tr id="row1">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr id="row2">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr id="row3">
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+      <tr>
+        <td></td>
+        <td></td>
+        <td></td>
+        <td></td>
+      </tr>
+    </table>
+  </body>
+</html>
+
+<script>
+  function deleteColumn() {
+    var table = document.getElementById("table1");
+    var rowCount = table.rows.length + 1;
+    let index = 2;
+    // let index = table.rows.length-1;
+    for (var i = 0; i < rowCount; i++) {
+      table.rows[i].deleteCell(index);
+    }
+    if (table.cells.length == 2) {
+      alert("You can't delete more columns");
+    }
+  }
+  function deleteRow() {
+    var tbl = document.getElementById("table1"), // table reference
+      lastRow = tbl.rows.length - 2; // set the last row index
+    let index = tbl.rows.length - 1;
+    // let index = 1;
+    // delete rows with index greater then 0
+    for (i = lastRow; i > 0; i--) {
+      tbl.deleteRow(index);
+    }
+    if (tbl.rows.length <= 2) {
+      alert("You can't Delete more rows");
+    }
+  }
+
+  function appendRow() {
+    var tbl = document.getElementById("table1"), // table reference
+      row = tbl.insertRow(tbl.rows.length), // append table row
+      i;
+    // insert table cells to the new row
+    for (i = 0; i < tbl.rows[0].cells.length; i++) {
+      createCell(row.insertCell(i), "");
+    }
+  }
+  function appendColumn() {
+    var tbl = document.getElementById("table1"), // table reference
+      i;
+    // open loop for each row and append cell
+    for (i = 0; i < tbl.rows.length; i++) {
+      createCell(tbl.rows[i].insertCell(tbl.rows[i].cells.length), "");
+    }
+  }
+  // create TR element and append to the table cell
+  function createCell(cell, clr) {
+    var tr = document.createElement("tr"), // create TR element
+      clr = document.createTextNode(clr); // create text node
+    tr.appendChild(clr); // append text node to the TR
+    cell.appendChild(tr); // append TR to the table cell
+  }
+</script>

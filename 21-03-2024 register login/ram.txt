@@ -1,0 +1,2 @@
+1.email click link show
+2.post walo route res.send code ni loml

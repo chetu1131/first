@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+  </head>
+  <style>
+    .main {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      padding: 60px;
+      background-color: lightcyan;
+      margin-top: 100px;
+    }
+    tr,
+    td {
+      padding: 10px;
+    }
+    h2 {
+      text-align: center;
+    }
+  </style>
+  <body>
+    <h2>Registration</h2>
+    <form
+      id="registration"
+      name="registration"
+      method="post"
+      action="/"
+      target="_blank"
+      autocomplete="on"
+      onsubmit="return validateform()"
+    >
+      <div class="main">
+        <table>
+          <tr>
+            <td>
+              Create Password:<input
+                type="text"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Confirm Password :
+              <input type="text" id="compassword" name="compassword" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input type="button" value="Register" id="register" />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p id="register" onclick="ajax_post()">Submit</p>
+              <a
+                class="submit"
+                id="submit"
+                style="display: none"
+                onclick="fetch_token()"
+                >Activate</a
+              >
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </body>
+
+  <script>
+  //  var json;
+  //   var submit = document.getElementById("submit");
+  //   async function ajax_post() {
+  //     if (!validateform()) {
+  //       return false;
+  //     } else {
+  //       submit.style.display = "block";
+  //       const form = document.getElementById("registration");
+  //       const obj = new URLSearchParams(
+  //         new FormData(document.forms["registration"])
+  //       );
+
+  //       let result1 = await fetch("/register", {
+  //         method: "POST",
+  //         body: obj,
+  //       });
+        
+  //       json = await result1.json();
+  //       submit.setAttribute(
+  //         "href",
+  //         "http://localhost:8000/data/?id=" + json.id + "&token=" + json.token
+  //       );
+  //       submit.innerHTML =
+  //         "Your Activation Link is : " +
+  //         "http://localhost:8000/data/?id=" +
+  //         json.id +
+  //         "&token=" +
+  //         json.token;
+  //     }
+  //   }
+  //   async function fetch_token() {
+  //     var userid = json.id;
+  //     var usertoken = json.token;
+  //     let data = new URLSearchParams(`id=${userid}&token=${usertoken}`);
+  //     let result2 = await fetch("/data", {
+  //       method: "POST",
+  //       body: data,
+  //     });
+  //   }
+
+
+     function validateform() {
+      var pass1 = document.getElementById("password").value;
+      var pass2 = document.getElementById("compassword").value;
+      if (pass1 == null || pass1 == "") {
+        alert("password required");
+        return false;
+      }
+      if (pass2 == null || pass2 == "") {
+        alert("Please Comfirm password");
+        return false;
+      }
+
+      if (pass1 != pass2) {
+        document.getElementById("wrong_pass_alert").style.color = "red";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "☒ Use same password";
+        return false;
+      } else {
+        document.getElementById("wrong_pass_alert").style.color = "green";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "🗹 Password Matched";
+        return true;
+      }
+      if (validateform() == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+ 
+  </script>
+</html>

@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Color Cube Game</title>
+  </head>
+  <style>
+    body {
+      background: cyan;
+    }
+    .center {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+    table,
+    td {
+      border: 2px solid black;
+      /* border-radius: 8px; */
+    }
+
+    #table1 {
+      display: fixed;
+      width: 1000px;
+      height: 800px;
+    }
+    h3 {
+      text-align: center;
+    }
+  </style>
+  <body>
+    <h3>02-02-2024 - Color Cube Game - Parmar Parmeshvar</h3>
+    <div><span id="score">score </span>0</div>
+    <div><span id="time">time</span></div>
+    <div class="center">
+      <table id="table1" cellpadding="40">
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+        <tr>
+          <td></td>
+          <td></td>
+        </tr>
+      </table>
+    </div>
+  </body>
+</html>
+
+<script>
+  var table = document.getElementById("table1");
+  var rowCount = 2;
+  var colCount = 2;
+  var score = 0;
+  time = 10;
+
+  setInterval(function () {
+    time--;
+    document.getElementById("time").innerHTML = time;
+    if (time == 0) {
+      alert("score" + score);
+      score = 0;
+      time = 10;
+    }
+  }, 1000);
+  generateRandomCells();
+  function generateRandomCells() {
+    var table = document.getElementById("table1");
+    let randRow = Math.floor(Math.random() * rowCount);
+    let randCol = Math.floor(Math.random() * colCount);
+    let color = randomColor();
+
+    for (let i = 0; i < table.rows.length; i++) {
+      for (let j = 0; j < table.rows[i].cells.length; j++) {
+        table.rows[i].cells[j].style.background = color;
+      }
+    }
+
+    var col = table.rows[randRow].cells[randCol];
+    col.style.opacity = "0.5";
+    col.addEventListener("click", myFunct);
+    function myFunct() {
+      if (rowCount < 10) addcol();
+      if (colCount < 10) addrow();
+      score++;
+      document.getElementById("score").innerHTML = score;
+      col.removeEventListener("click", myFunct);
+      col.style.opacity = "1";
+      generateRandomCells();
+    }
+  }
+
+  function randomColor() {
+    var x = Math.floor(Math.random() * 256);
+    var y = Math.floor(Math.random() * 256);
+    var z = Math.floor(Math.random() * 256);
+    return "rgb(" + x + "," + y + "," + z + ")";
+  }
+
+  function addrow() {
+    var table = document.getElementById("table1");
+    var row_Count = table.rows.length;
+    var col_Count = table.rows[0].cells.length;
+    var rows = table.insertRow(row_Count);
+    var cell;
+    for (var i = 0; i < col_Count; i++) {
+      cell = rows.insertCell(i);
+    }
+    rowCount++;
+  }
+
+  function addcol() {
+    var table = document.getElementById("table1");
+    var row_Count = table.rows.length;
+    var col_Count = table.rows[0].cells.length;
+    var rows = table.rows;
+
+    for (var i = 0; i < row_Count; i++) {
+      rows[i].insertCell(col_Count);
+    }
+    colCount++;
+  }
+</script>

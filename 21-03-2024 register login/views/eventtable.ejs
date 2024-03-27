@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DOM experiment</title>
+</head>
+<style>
+     /* tr:nth-child(odd){
+        background: rgb(10, 48, 48);
+    }
+    th:nth-child(odd){
+        background: rgb(10, 48, 48);
+    }
+      td:nth-child(even){
+        background: rgb(126, 156, 182);
+    } td:nth-child(even){
+        background:white;
+    }
+   
+     tr{
+        width: 100%;
+        height: 100%;
+        border: 2px solid black;
+    }
+    table{
+        border: 2px solid black;
+    } */
+    .even{
+        background-color: rgb(139, 107, 89);
+    }
+    .odd{
+        background-color: rgb(22, 187, 209);
+    }
+   
+   table,tr,td{
+    border: 1px solid black;
+   }
+   table{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+   }
+</style>
+<body onload="onLoad()"onunload = "onUnLoad()" ononline="onOnline()" onoffline="onOffline()" onresize="onResize()">
+    <h4>Parmar Parmeshvar -- Date :  31/01-01/02-2024</h4>
+    <form action="" onsubmit="onSubmit()">
+    <table cellspacing = "10" cellpadding="8">
+        <tr>
+            <td class="odd" onmousedown="onMouseDown()">Mouse Down</td>
+            <td> <div onmousemove="onMousemove()">Move the cursor over me</div ></td>
+            <td class="odd" >
+                <button onmouseout="mouseOutEvent()">Mouse Out</button>
+            </td>
+            <td>
+                <button onclick="OnclickEvent()">On Click</button>
+            </td>
+            <td class="odd" >
+                <button ondblclick="ondblclick()" >On Double Click</button>
+            </td>
+            <td>On Blur <input type="text" size="8" id="blur"  onblur="blurFunction()" ></td>
+        </tr>
+
+        <tr>
+            <td> On Focus <input type="text" size="8" id="focus" onfocus="focusFunction()"></td>
+            <td class="even" onmouseup="onMouseUp()"> Mouse Up</td>
+            <td><input type="text" onkeydown="onKeyDown()"> Enter anthing - Key Down</td>
+            <td class="even" id="over" ><img onmouseover="bigImg(this)" onmouseout="normalImg(this)" src="./smiley.gif" alt="Smiley" width="32" height="32"></td>
+            <td><input type="text" onkeypress="onKeyPess()"> Enter anthing - Key Press</td>
+            <td class="even">
+                Enter anthing - Key Up: <input type="text" id="keyup" onkeyup="onKeyUp()"></td>
+        </tr>
+        <tr>
+            <td class="odd">
+              On Change Event  <input type="text" id="beforechange" onchange="onChange()">
+              <p id="onchange"></p>
+            </td>
+            <td>On Input Event  <input type="text" id="beforeinput" oninput="onInput()">
+                <p id="oninput"></p></td>
+            <td class="odd">Select some of the text: <input type="text" value="Hello world!" onselect="onSelect()"></td>
+            <td><img src="./image.gif" onerror="onError()"></td>
+            <td class="odd"> <p id="demo">onOnline and onOffline</p></td>
+            <td><p id="resize">Resize -Executed the script when the window is resized.</p></td>
+        </tr>
+
+        <tr>
+            <td><div id="wheels" style="border:1px solid black">
+                <p>Roll the mouse wheel over me!</p>
+                </div></td>
+            <td class="even"><input type="text" oncopy="onCopy()" value="Try to copy me"><p id="copy"></p></td>
+            <td><input type="text" onpaste="onPaste()" value="Paste something here" size="40">
+                <p id="paste"></p></td>
+            <td class="even"><input type="text" oncopy="onCut()" value="Try to cut me">
+                <p id="cut"></p>
+            </td>
+            <td><video controls oncanplay="onPlay()"onended="onEnded()">
+                <source src="./mov_bbb.mp4" type="video/mp4">
+                <source src="./mov_bbb.ogg" type="video/ogg">
+                Your browser does not support HTML5 video.
+              </video>
+              <p id="play"></p>
+             
+
+              </td>
+            <td class="even"><video controls onended="onEnded()">
+                <source src="./mov_bbb.mp4" type="video/mp4">
+                <source src="./mov_bbb.ogg" type="video/ogg">
+                Your browser does not support HTML5 video.
+              </video>
+              <p id="ended"></p></td>
+        </tr>
+
+        <tr>
+            <td> 
+
+                <video controls onplaying="onPlaying()">
+                  <source src="./movie.mp4" type="video/mp4">
+                  <source src="./movie.ogg" type="video/ogg">
+                  Your browser does not support the video tag.
+                </video>
+                
+                <p id="playing"></p></td>
+            <td class="even"></td>
+            <td> <div onscroll="onScroll()" style="overflow: scroll; border: 1px solid black;
+                width: 200px;
+                height: 100px;"> my younger and more vulnerable years my father gave me some advice that I've been turning over in my mind ever since.</div></td>
+            <td class="even"></td>
+            <td onreset="onReset()">
+                Enter name:<input type="text" size="8">
+                <input type="reset"></td>
+            <td class="even"> Enter name: <input type="text" size="8" name="fname" oninvalid="onInvalid()" required><input type="submit" value="Submit"></td>
+        </tr>
+         
+    </table>
+</form>
+</body>
+</html>
+
+<script>
+    // this.innerHTML = 'Oooops!!'"
+
+    function mouseOutEvent(){
+        alert("occurs when mouse is moved out from an element (after moved over)..")
+        let x = document.getElementById("over");
+        x.style.color="red"
+    }
+    function OnclickEvent(){
+        alert("occurs when element is clicked.")
+    }
+
+    function ondblclick(){
+        alert("occurs when element is double-clicked.")
+    }
+
+    function focusFunction() {
+        document.getElementById("focus").style.background = "yellow";
+        alert("Trigger an event when the element gets focused. ");
+    }
+
+    function blurFunction(){
+        let x = document.getElementById("blur");
+        x.value = x.value.toUpperCase();
+        alert("occurs when form looses the focus from an element.");
+    }
+    function onSubmit(){
+        alert("occurs when form is submitted.");
+    }
+    function onMouseOver(){
+        alert("occurs when mouse is moved over an element.");
+        let x = document.getElementById("over");
+        x.style.color="blue"
+    }
+    function onMouseDown(){
+        alert("occurs when mouse button is pressed over an element.")
+    }
+    function onMouseUp(){
+        alert("occurs when mouse is released from an element (after mouse is pressed).")
+    }
+    function onLoad(){
+        alert("occurs when document, object or frameset is loaded.")
+    }
+    function onScroll(){
+        alert("occurs when document is scrolled.")
+    }
+    function onUnLoad(){
+        alert("occurs when body or frameset is unloaded.")
+    }
+    function onReset(){
+        alert("occurs when form is reset.")
+    }
+    function onKeyDown(){
+        alert("occurs when key is being pressed.")
+    }
+    function onKeyPess(){
+        alert("occurs when user presses the key.")
+    }
+    function onKeyUp(){
+        alert("	occurs when key is released.");
+        let x = document.getElementById("keyup");
+  x.value = x.value.toUpperCase();
+    }
+
+    function onMousemove(){
+        alert("The onmousemove event occurs when the pointer moves over an element.");
+    }
+
+    function onChange(){
+        alert("Executed the script when the value of the element is changed.");
+        var x = document.getElementById("beforechange").value;
+        document.getElementById("onchange").innerHTML = "You typed: " + x;
+    }
+
+    function onInput(){
+        alert("Trigger an event when the element gets focused. ");
+        var x = document.getElementById("beforeinput").value;
+        document.getElementById("oninput").innerHTML = "You typed: " + x;
+    }
+
+    function onInvalid(){
+        alert("Executed the script when the element does not satisfy its predefined constraints.")
+    }
+
+    function bigImg(x) {
+        x.style.height = "64px";
+        x.style.width = "64px";
+    }
+
+    function normalImg(x) {
+        x.style.height = "32px";
+        x.style.width = "32px";
+    }
+
+    function onSelect(){
+        alert("Triggers the event when the user has selected some text.")
+    }
+
+    function onError() {
+        alert('The image could not be loaded.');
+    }
+    function onOnline() {
+        document.getElementById("demo").innerHTML = "Your browser is working online.";
+    }
+
+    function onOffline() {
+        document.getElementById("demo").innerHTML = "Your browser is working offline.";
+    }
+
+    function onResize() {
+        let w = window.outerWidth;
+        let h = window.outerHeight;
+        let txt = "Window size: width=" + w + ", height=" + h;
+        document.getElementById("resize").innerHTML = txt;
+    }
+
+    document.getElementById("wheels").addEventListener("wheel", myFunction);
+
+    function myFunction() {
+        this.style.fontSize = "20px";
+    }
+
+    function onCopy() {
+        document.getElementById("copy").innerHTML = "You copied text!"
+    }  
+    function onPaste() {
+        document.getElementById("paste").innerHTML = "You pasted text!";
+    } 
+    function onCut() {
+        document.getElementById("cut").innerHTML = "You cut text!";
+    }  
+    function onPlay() {
+        document.getElementById("play").innerHTML = "Can start playing video.";
+    }
+
+    function onEnded() {
+        document.getElementById("ended").innerHTML = "The video has ended";
+    }
+
+ 
+    function onPlaying() {
+        document.getElementById("playing").innerHTML += "The video is playing. ";
+    }
+
+</script>

@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+  </head>
+  <style>
+    .main {
+      width: 600px;
+      padding: 60px;
+      background-color: lightcyan;
+      margin-top: 100px;
+    }
+    form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    td {
+      padding: 10px;
+    }
+    h2 {
+      text-align: center;
+    }
+
+  #submit{
+    padding: 8px;
+    background-color: green;
+    border: 2px solid black;
+    border-radius: 4px;
+  }
+  </style>
+  <body>
+    <form
+      id="forgotpass"
+      name="forgotpass"
+      method="post"
+      action="/newpass"
+      autocomplete="on"
+    >
+      <div class="main">
+        <h2>Forgot Password</h2>
+        <table>
+          <tr>
+            <input type="hidden" name="id" value="<%=id%>" />
+            <td>
+              Create Password:<input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Confirm Password :
+              <input type="password" id="compassword" name="compassword" />
+              <span id="wrong_pass_alert"></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <input id="submit" type="submit" value="Change pass" onclick="chagenpass()" />
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </body>
+  <script>
+    async function chagenpass() {
+      console.log("hello");
+      const form = document.getElementById("forgotpass");
+      const obj = new URLSearchParams(new FormData(form));
+      console.log(obj);
+      let result1 = await fetch("/forgotpass2", {
+        method: "POST",
+        body: obj,
+      });
+      console.log(result1);
+    }
+
+    // onsubmit give token link to front end
+    function validateform() {
+      var pass1 = document.getElementById("password").value;
+      var pass2 = document.getElementById("compassword").value;
+
+      if (pass1 == null || pass1 == "") {
+        alert("pass required");
+        return false;
+      }
+      if (pass2 == null || pass2 == "") {
+        alert("Please COmfirm required");
+        return false;
+      }
+
+      if (pass1 != pass2) {
+        document.getElementById("wrong_pass_alert").style.color = "red";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "☒ Use same password";
+        return false;
+      } else {
+        document.getElementById("wrong_pass_alert").style.color = "green";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "🗹 Password Matched";
+        return true;
+      }
+      if (validateform() == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
+</html>

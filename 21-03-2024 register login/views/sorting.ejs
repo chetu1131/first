@@ -1,0 +1,56 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>BubbleSort Example</title>
+  </head>
+  <body>
+    Bubble Sort
+    <br />
+    <!-- <p>Choose one of the following to create a list of numbers:</p> -->
+
+    <button onclick="createList();" id="display">Input Numbers</button> 
+    <!-- or -->
+    <!-- <button onclick="randomNumbers();">Generate 30 Numbers</button> -->
+    <p id="outputnumber">4,1,2,3</p>
+    <button onclick="createSortedArray()" id="bubble">Bubble sort!</button>
+  </body>
+</html>
+<script>
+  // function randomNumbers() {
+  //   document.getElementById("outputnumber").innerHTML = Array.from(
+  //     { length: 30 },
+  //     () => Math.floor(Math.random() * 100)
+  //   );
+  // }
+
+  function bubbleSort(arr) {
+    var swapped;
+    do {
+      swapped = false;
+      for (var i = 0; i < arr.length - 1; i++) {
+        if (arr[i] > arr[i + 1]) {
+          var temp = arr[i];
+          arr[i] = arr[i + 1];
+          arr[i + 1] = temp;
+          swapped = true;
+        }
+      }
+    } while (swapped);
+  }
+
+  function createList() {
+    var number = prompt("Enter numbers, seperated by a comma(,)");
+    document.getElementById("outputnumber").innerText = number;
+  }
+
+  function createSortedArray() {
+    var list = document
+      .getElementById("outputnumber")
+      .innerText.split(",")
+      .map(Number);
+    bubbleSort(list);
+    document.getElementById("outputnumber").innerText = list;
+  }
+</script>

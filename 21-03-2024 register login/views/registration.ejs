@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Registration</title>
+  </head>
+  <style>
+    .main {
+      width: 600px;
+      padding: 60px;
+      background-color: lightcyan;
+      margin-top: 100px;
+    }
+    form {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+    }
+
+    td {
+      padding: 10px;
+    }
+    h2 {
+      text-align: center;
+    }
+    #register,
+    p {
+      background-color: black;
+      text-align: center;
+      color: white;
+      width: 80px;
+      height: 20px;
+      border: 2px solid black;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+    a {
+      text-decoration: none;
+    }
+  </style>
+  <body>
+    <form
+      id="registration"
+      name="registration"
+      method="post"
+      action=""
+      autocomplete="on"
+    >
+      <div class="main">
+        <h2>Registration</h2>
+        <table>
+          <tr>
+            <td>
+              Name :<input
+                type="text"
+                id="firstname"
+                name="firstname"
+                placeholder="Enter your name"
+              />
+              <span id="first-name-err"></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Email:<input
+                type="text"
+                id="email"
+                name="email"
+                placeholder="Enter your email"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Phone Number<input
+                type="text"
+                id="phonenumber"
+                name="phonenumber"
+                placeholder="Enter your phone number"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Create Password:<input
+                type="password"
+                id="password"
+                name="password"
+                placeholder="Enter your password"
+              />
+            </td>
+          </tr>
+          <tr>
+            <td>
+              Confirm Password :
+              <input type="password" id="compassword" name="compassword" />
+              <span id="wrong_pass_alert"></span>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              <p id="register" onclick="ajax_post()">Register</p>
+              <a
+                class="acivatelink"
+                id="acivatelink"
+                style="display: none"
+                onclick="fetch_token()"
+                >Activate</a
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>Login if already register 
+              <a href="/login">Login</a>
+            </td>
+          </tr>
+        </table>
+      </div>
+    </form>
+  </body>
+  <script>
+    var json;
+    var active = document.getElementById("acivatelink");
+
+    async function ajax_post() {
+      if (!validateform()) {
+        return false;
+      } else {
+        active.style.display = "block";
+        const form = document.getElementById("registration");
+        const obj = new URLSearchParams(
+          new FormData(document.forms["registration"])
+        );
+        console.log(obj);
+        let result1 = await fetch("/register", {
+          method: "POST",
+          body: obj,
+        });
+        json = await result1.json();
+        active.setAttribute(
+          "href",
+          "http://localhost:8000/data/?id=" + json.id + "&token=" + json.token
+        );
+        active.innerHTML =
+          "Your Activation Link is : " +
+          "http://localhost:8000/data/?id=" +
+          json.id +
+          "&token=" +
+          json.token;
+        console.log(json);
+      }
+    }
+
+    async function fetch_token() {
+      var userid = json.id;
+      var usertoken = json.token;
+      console.log("id and token " + userid, usertoken);
+      let data = new URLSearchParams(`id=${userid}&token=${usertoken}`);
+      console.log(data);
+      let result2 = await fetch("/data", {
+        method: "POST",
+        body: data,
+      });
+    }
+
+    // onsubmit give token link to front end
+    function validateform() {
+      var firstname = document.getElementById("firstname").value;
+      var emailval = document.getElementById("email").value;
+      var phonenumber = document.getElementById("phonenumber").value;
+      var pass1 = document.getElementById("password").value;
+      var pass2 = document.getElementById("compassword").value;
+
+      if (firstname == null || firstname == "") {
+        alert("Name can't be blank");
+        return false;
+      }
+
+      if (emailval == null || emailval == "") {
+        alert("email required");
+        return false;
+      }
+      if (phonenumber == null || phonenumber == "") {
+        alert("phone number required");
+        return false;
+      }
+      if (pass1 == null || pass1 == "") {
+        alert("pass required");
+        return false;
+      }
+      if (pass2 == null || pass2 == "") {
+        alert("Please COmfirm required");
+        return false;
+      }
+
+      if (pass1 != pass2) {
+        document.getElementById("wrong_pass_alert").style.color = "red";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "☒ Use same password";
+        return false;
+      } else {
+        document.getElementById("wrong_pass_alert").style.color = "green";
+        document.getElementById("wrong_pass_alert").innerHTML =
+          "🗹 Password Matched";
+        return true;
+      }
+      if (validateform() == true) {
+        return true;
+      } else {
+        return false;
+      }
+    }
+  </script>
+</html>

@@ -1,0 +1,178 @@
+export const createTweet = async (req, res) => {
+    try {
+        const { description, id } = req.body;
+        if (!description || !id) {
+            return res.status(401).json({
+                message: "Fields are required.",
+                success: false
+            });
+        };
+
+        pool.query('INSERT INTO tweets (description, userId) VALUES (?, ?)', [description, id], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({
+                    message: "Failed to create tweet.",
+                    success: false
+                });
+            }
+            return res.status(201).json({
+                message: "Tweet created successfully.",
+                success: true,
+                tweetId: results.insertId
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Server error.",
+            success: false
+        });
+    }
+}
+export const deleteTweet = async (req,res) => {
+    try {
+        const { id } = req.params;
+
+        pool.query('DELETE FROM tweets WHERE tweetId = ?', [id], (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({
+                    message: "Failed to delete tweet.",
+                    success: false
+                });
+            }
+            return res.status(200).json({
+                message: "Tweet deleted successfully.",
+                success: true
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Server error.",
+            success: false
+        });
+    }
+}
+export const likeOrDislike = async (req,res) => {
+    try {
+        const loggedInUserId = req.body.id;
+        const tweetId = req.params.id;
+
+        const likeQuery = 'SELECT * FROM tweet_likes WHERE userId = ? AND tweetId = ?';
+        const likeParams = [loggedInUserId, tweetId];
+
+        pool.query(likeQuery, likeParams, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({
+                    message: "Failed to perform like/dislike.",
+                    success: false
+                });
+            }
+
+            if (results.length > 0) {
+                // User has liked -> dislike
+                pool.query('DELETE FROM tweet_likes WHERE userId = ? AND tweetId = ?', likeParams, (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).json({
+                            message: "Failed to dislike tweet.",
+                            success: false
+                        });
+                    }
+                    return res.status(200).json({
+                        message: "User disliked your tweet."
+                    });
+                });
+            } else {
+                // User has not liked -> like
+                pool.query('INSERT INTO tweet_likes (userId, tweetId) VALUES (?, ?)', likeParams, (error, results) => {
+                    if (error) {
+                        console.error(error);
+                        return res.status(500).json({
+                            message: "Failed to like tweet.",
+                            success: false
+                        });
+                    }
+                    return res.status(200).json({
+                        message: "User liked your tweet."
+                    });
+                });
+            }
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Server error.",
+            success: false
+        });
+    }
+}
+export const getAllTweets = async (req,res) => {
+    try {
+        const id = req.params.id;
+
+        const getAllTweetsQuery = `
+            SELECT * FROM tweets
+            WHERE userId = ?
+            OR userId IN (SELECT followingId FROM followers WHERE followerId = ?)
+        `;
+        const getAllTweetsParams = [id, id];
+
+        pool.query(getAllTweetsQuery, getAllTweetsParams, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({
+                    message: "Failed to retrieve tweets.",
+                    success: false
+                });
+            }
+            return res.status(200).json({
+                tweets: results
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Server error.",
+            success: false
+        });
+    }
+}
+export const getFollowingTweets = async (req,res) => {
+    try {
+        const id = req.params.id;
+
+        const getFollowingTweetsQuery = `
+            SELECT * FROM tweets
+            WHERE userId IN (SELECT followingId FROM followers WHERE followerId = ?)
+        `;
+        const getFollowingTweetsParams = [id];
+
+        pool.query(getFollowingTweetsQuery, getFollowingTweetsParams, (error, results) => {
+            if (error) {
+                console.error(error);
+                return res.status(500).json({
+                    message: "Failed to retrieve following tweets.",
+                    success: false
+                });
+            }
+            return res.status(200).json({
+                tweets: results
+            });
+        });
+
+    } catch (error) {
+        console.error(error);
+        return res.status(500).json({
+            message: "Server error.",
+            success: false
+        });
+    }
+}

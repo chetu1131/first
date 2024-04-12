@@ -1,0 +1,129 @@
+//like
+INSERT INTO notifications (user_id, tweet_id, type, related_user_id)
+VALUES (?, ?, 'like', ?);
+//comment
+INSERT INTO notifications (user_id, tweet_id, type, related_user_id)
+VALUES (?, ?, 'comment', ?);
+//follow
+INSERT INTO notifications (user_id, type, related_user_id)
+VALUES (?, 'follow', ?);
+//reteets
+INSERT INTO notifications (user_id, tweet_id, type, related_user_id)
+VALUES (?, ?, 'retweet', ?);
+//fetch notification
+SELECT n.*, u.username AS related_username, t.content AS tweet_content
+FROM notifications n
+LEFT JOIN users u ON n.related_user_id = u.id
+LEFT JOIN tweets t ON n.tweet_id = t.id
+WHERE n.user_id = ?
+ORDER BY n.created_at DESC;
+
+
+controller
+// Fetch notifications for a user
+async function getUserNotifications(userId) {
+  const connection = await pool.getConnection();
+  try {
+    const [notifications] = await connection.query(`
+      SELECT n.*, u.username AS related_username, t.content AS tweet_content
+      FROM notifications n
+      LEFT JOIN users u ON n.related_user_id = u.id
+      LEFT JOIN tweets t ON n.tweet_id = t.id
+      WHERE n.user_id = ?
+      ORDER BY n.created_at DESC;
+    `, [userId]);
+    return notifications;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  } finally {
+    connection.release(); // Release the connection back to the pool
+  }
+}
+
+//routes
+const express = require('express');
+const router = express.Router();
+const { getUserNotifications } = require('../controllers/notificationController');
+
+//render notifications page
+router.get('/notifications', async (req, res) => {
+  try {
+    const userId = req.user.id; // Assuming authenticated user ID is available
+    const notifications = await getUserNotifications(userId);
+    res.render('notifications', { notifications });
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    res.status(500).send('Internal Server Error');
+  }
+});
+
+module.exports = router;
+
+const { query } = require('../config/database'); // Assuming you have a database connection setup
+
+async function getUserNotifications(userId) {
+  try {
+    const [notifications] = await query(`
+      SELECT n.*, u.username AS related_username, t.content AS tweet_content
+      FROM notifications n
+      LEFT JOIN users u ON n.related_user_id = u.id
+      LEFT JOIN tweets t ON n.tweet_id = t.id
+      WHERE n.user_id = ?
+      ORDER BY n.created_at DESC;
+    `, [userId]);
+    return notifications;
+  } catch (error) {
+    console.error('Error fetching notifications:', error);
+    throw error;
+  }
+}
+
+module.exports = {
+  getUserNotifications
+};
+
+
+
+
+//ejs
+<section class="w-3/5 border border-gray-200 max-w-screen-sm min-h-dvh">
+  <div class="font-medium flex justify-around rounded-lg text-start p-8">
+    <span class="mt-2 font-medium text-xl">Notification</span>
+    <img
+      class="p-1 w-10 h-10 rounded-full"
+      src="/assets/notification.gif"
+      alt="Bordered avatar"
+    />
+  </div>
+  
+  <% notifications.forEach(notification => { %>
+    <div class="block w-full px-4 py-2 border-b border-gray-200 cursor-pointer hover:bg-gray-100 hover:text-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-700 focus:text-blue-700">
+      <div class="flex">
+        <img
+          class="w-10 h-10 p-1 rounded-full"
+          src="<%= notification.avatarUrl %>"
+          alt="Bordered avatar"
+        />
+        <div class="mt-2">
+          <% if (notification.type === 'login') { %>
+            There was a login to your account <%= notification.username %> from a new device on <%= notification.date %>. Review it now.
+          <% } else if (notification.type === 'password_reset') { %>
+            Your password was reset on your account. Based on this change, additional changes to your account may be restricted temporarily.
+          <% } else if (notification.type === 'follow') { %>
+            <%= notification.username %> followed you
+          <% } else if (notification.type === 'like') { %>
+            <img
+              class="w-15 h-10 p-1 rounded-full"
+              src="/assets/heart.png"
+              alt="like icon"
+            />
+            <%= notification.username %> liked your Tweet
+            <div class="mt-2"><%= notification.tweetContent %></div>
+          <% } %>
+        </div>
+      </div>
+    </div>
+  <% }); %>
+
+</section>

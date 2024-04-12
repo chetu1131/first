@@ -1,0 +1,99 @@
+const express = require('express');
+const http = require('http');
+const socketIo = require('socket.io');
+
+const app = express();
+const server = http.createServer(app);
+const io = socketIo(server);
+
+app.set('view engine', 'ejs');
+app.use(express.static(__dirname + '/public'));
+
+// Routes
+app.get('/', (req, res) => {
+  res.render('index'); // Render your EJS template
+});
+
+// Socket.io connection handling
+io.on('connection', (socket) => {
+  console.log('A user connected');
+
+  // Simulated new notification event (replace with actual logic)
+  socket.on('newNotification', (data) => {
+    console.log('New notification:', data);
+    io.emit('notification', data); // Emit the notification to all clients
+  });
+
+  socket.on('disconnect', () => {
+    console.log('User disconnected');
+  });
+});
+
+const PORT = process.env.PORT || 3000;
+server.listen(PORT, () => {
+  console.log(`Server running on port ${PORT}`);
+});
+
+
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Real-Time Notifications</title>
+</head>
+<body>
+    <section class="notification-section">
+        <h2>Notifications</h2>
+        <ul id="notification-list">
+            <!-- Notification items will be dynamically added here -->
+        </ul>
+    </section>
+
+    <script src="/socket.io/socket.io.js"></script>
+    <script>
+        const socket = io();
+
+        // Listen for incoming notifications
+        socket.on('notification', (data) => {
+            const notificationList = document.getElementById('notification-list');
+
+            // Create a new notification item
+            const newItem = document.createElement('li');
+            newItem.textContent = data.message;
+
+            // Append the new notification to the list
+            notificationList.appendChild(newItem);
+        });
+    </script>
+</body>
+</html>
+
+
+
+const express = require('express');
+const router = express.Router();
+
+// Simulated database or event handler for new notifications
+const notifyNewEvent = (eventType, eventData) => {
+  // This function would be replaced with actual event handling logic
+  // Emit the new notification event to connected clients
+  router.io.emit('newNotification', {
+    message: `New ${eventType}: ${eventData}`,
+  });
+};
+
+// Example route to trigger a new notification
+router.get('/trigger', (req, res) => {
+  // Simulated new notification (replace with actual logic)
+  const eventType = 'like';
+  const eventData = 'User123 liked your tweet';
+
+  // Trigger the notification
+  notifyNewEvent(eventType, eventData);
+
+  res.send('Notification triggered');
+});
+
+module.exports = router;

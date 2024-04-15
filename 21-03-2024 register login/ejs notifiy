@@ -71,5 +71,7 @@
 
     // Fetch notifications when the page loads
     window.addEventListener("load", fetchNotifications);
+//window.addEventListener('DOMContentLoaded', fetchNotifications);
+
   </script>
 </html>

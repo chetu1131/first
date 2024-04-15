@@ -1,0 +1,82 @@
+// Route to fetch notifications
+const express = require("express");
+const router = express.Router();
+const pool = require("../../config/database");
+const getNotifications = async (req, res) => {
+  try {
+    // Fetch notifications from the database
+    const [rows] = await pool.query("SELECT * FROM notifications");
+
+    // Loop through notifications and enhance data for specific types
+    for (let notification of rows) {
+      switch (notification.type) {
+        case "Follow":
+          // Fetch usernames of both users involved in the follow relationship
+          const [followData] = await pool.query(
+            `
+            SELECT follower.username AS follower_username, followed.username AS followed_username
+            FROM following
+            JOIN users AS follower ON following.follower_id = follower.id
+            JOIN users AS followed ON following.followed_id = followed.id
+            WHERE following.id = ?
+          `,
+            [notification.follow_id]
+          );
+
+          // Add usernames to the notification data
+          notification.follower_username = followData[0].follower_username;
+          notification.followed_username = followData[0].followed_username;
+          break;
+
+        case "Comment":
+          // Fetch the username of the user who commented
+          const [commentData] = await pool.query(
+            `
+            SELECT username
+            FROM users
+            WHERE id = ?
+          `,
+            [notification.user_id]
+          );
+
+          // Add the username to the notification data
+          notification.username = commentData[0].username;
+          break;
+
+        case "Like":
+        case "Retweet":
+        case "ReplyToTweet":
+          // Fetch the username of the user who performed the action
+          const [actionUserData] = await pool.query(
+            `
+            SELECT username
+            FROM users
+            WHERE id = ?
+          `,
+            [notification.user_id]
+          );
+
+          // Add the username to the notification data
+          notification.username = actionUserData[0].username;
+          break;
+
+        case "Login":
+          // No additional data needed for login notifications
+          break;
+
+        default:
+          console.warn(`Unknown notification type: ${notification.type}`);
+      }
+    }
+
+    // Send notifications as JSON response
+    res.json(rows);
+  } catch (error) {
+    console.error("Error fetching notifications:", error);
+    res.status(500).json({ error: "Internal server error" });
+  }
+};
+
+module.exports = {
+  getNotifications,
+};

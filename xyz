@@ -1,0 +1,690 @@
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm, UseFormRegister } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+
+import { Field } from "../Forms/Field";
+import React from "react";
+
+enum GenderEnum {
+  female = "female",
+  male = "male",
+  other = "other",
+}
+interface IFormInput {
+  firstName: string;
+  lastName: string;
+  age: number;
+  designation: string;
+  address1: string;
+  address2: string;
+  email: string;
+  city: string;
+  phoneNumber: number;
+  state: string;
+  gender: GenderEnum | string;
+  zipcode: string | number;
+  relationshipStatus: string;
+  dateOfBirth: string | number | Date;
+}
+
+function validatePhone(value: string) {
+  const phoneReg: RegExp = new RegExp(/[6-9][0-9]{9}/);
+  if (value === null) {
+    return "please enter mobile number";
+  }
+  if (phoneReg.test(value) === true) {
+    return true;
+  } else {
+    return "number is not valid";
+  }
+}
+
+const Select = React.forwardRef<
+  HTMLSelectElement,
+  { label: string } & ReturnType<UseFormRegister<IFormInput>>
+>(({ onChange, onBlur, name, label }, ref) => (
+  <>
+    <select
+      name={name}
+      ref={ref}
+      onChange={onChange}
+      onBlur={onBlur}
+      className='ml-4 mt-2 bg-blue-400 p-2 border rounded-lg'
+    >
+      <option value=''>Select</option>
+      <option value='Gujrat'>Gujrat</option>
+      <option value='Delhi'>Delhi</option>
+    </select>
+  </>
+));
+
+const BasicDetail = () => {
+  const [state, setState] = useState({});
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IFormInput>({
+    mode: "onChange",
+    criteriaMode: "all",
+    shouldFocusError: true,
+  });
+
+  const onSubmit: SubmitHandler<IFormInput> = (data: IFormInput) => {
+    localStorage.setItem("basicDetails", JSON.stringify(data));
+    setState({ ...state, ...data });
+    navigate("/education");
+    console.log(data);
+  };
+
+  const basicDetailsData = JSON.parse(
+    localStorage.getItem("basicDetails") as string
+  );
+  const [gender, setGender] = useState("");
+
+  const onOptionChange = (e: {
+    target: { value: React.SetStateAction<string> };
+  }) => {
+    setGender(e.target.value);
+  };
+
+  return (
+    <div className='App'>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <fieldset>
+          <legend>Basic Details </legend>
+          <div className='grid gap-6 mb-6 md:grid-cols-2'>
+            <div className='mb-5'>
+              <Field label='First Name' error={errors?.firstName}>
+                <input
+                  defaultValue={basicDetailsData?.firstName}
+                  {...register("firstName", {
+                    required: "First name is required",
+                    maxLength: 40,
+                    minLength: 3,
+                  })}
+                  id='firstname'
+                  placeholder='First name'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Last Name ' error={errors?.lastName}>
+                <input
+                  defaultValue={basicDetailsData?.firstName}
+                  {...register("lastName", {
+                    required: "Last name is required",
+                    maxLength: 40,
+                  })}
+                  id='lastname'
+                  placeholder='Last name'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='Designation' error={errors?.designation}>
+                <input
+                  defaultValue={basicDetailsData?.designation}
+                  {...register("designation", {
+                    required: "Designation is required",
+                    maxLength: 50,
+                  })}
+                  placeholder='Designation'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='Address 1' error={errors?.address1}>
+                <input
+                  defaultValue={basicDetailsData?.address1}
+                  {...register("address1", {
+                    required: "Permenent address required",
+                  })}
+                  placeholder='Address line 1'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='Email' error={errors?.email}>
+                <input
+                  defaultValue={basicDetailsData?.email}
+                  {...register("email", {
+                    required: "email is required",
+                    pattern: {
+                      value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+                      message: "invalid email address",
+                    },
+                  })}
+                  placeholder='Email'
+                  type='email'
+                  id='email'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='Address 2' error={errors?.address2}>
+                <input
+                  defaultValue={basicDetailsData?.address2}
+                  {...register("address2", {
+                    required: "addredd line 2 is required",
+                  })}
+                  placeholder='Address line 1'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='Phone Number' error={errors?.phoneNumber}>
+                <input
+                  defaultValue={basicDetailsData?.phoneNumber}
+                  {...register("phoneNumber", {
+                    required: "phone number is required",
+                    pattern: {
+                      value: /[6-9]{1}[0-9]{9}/,
+                      message: "invalid phone number",
+                    },
+                    // validate: { validatePhone() },
+                    // maxLength: 10,
+                  })}
+                  placeholder='Phone number'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field label='State' error={errors?.state}>
+                <select
+                  defaultValue={basicDetailsData?.state}
+                  className='ml-4 mt-2 bg-blue-400 p-2 border rounded-lg'
+                  {...register("state", {
+                    required: "Relationship is required",
+                  })}
+                >
+                  <option value='' defaultValue={basicDetailsData?.state}>
+                    Select
+                  </option>
+                  <option value='Gujrat' defaultValue={basicDetailsData?.state}>
+                    Gujrat
+                  </option>
+                  <option value='Delhi' defaultValue={basicDetailsData?.state}>
+                    Delhi
+                  </option>
+                </select>
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <label htmlFor='Gender'>
+                Gender
+                <label htmlFor='Gender'>
+                  <input
+                    defaultValue={basicDetailsData?.gender}
+                    type='radio'
+                    {...register("gender", { required: true })}
+                    value='male'
+                    name='male'
+                    id='male'
+                  />{" "}
+                  Male
+                </label>
+                <label htmlFor='Gender'>
+                  <input
+                    type='radio'
+                    defaultValue={basicDetailsData?.gender}
+                    {...register("gender", { required: true })}
+                    value='famale'
+                    id='female'
+                  />{" "}
+                  Female
+                </label>
+              </label>
+              <div className='error'>
+                {errors.gender?.type === "required" && "Please select gender"}
+              </div>
+            </div>
+            <div className='mb-5'>
+              <Field label='Zipcode' error={errors?.zipcode}>
+                <input
+                  defaultValue={basicDetailsData?.zipcode}
+                  {...register("zipcode", {
+                    required: "zipcode is required",
+                  })}
+                  placeholder='zipcode'
+                />
+              </Field>
+            </div>
+
+            <div className='mb-5'>
+              <Field
+                label='Relationship Status'
+                error={errors?.relationshipStatus}
+              >
+                <select
+                  defaultValue={basicDetailsData?.relationshipStatus}
+                  className='ml-4 mt-2 bg-blue-400 p-2 border rounded-lg'
+                  {...register("relationshipStatus", {
+                    required: "Relationship is required",
+                  })}
+                >
+                  <option
+                    value=''
+                    defaultValue={basicDetailsData?.relationshipStatus}
+                  >
+                    Select
+                  </option>
+                  <option
+                    value='single'
+                    defaultValue={basicDetailsData?.relationshipStatus}
+                  >
+                    Single
+                  </option>
+                  <option
+                    value='married'
+                    defaultValue={basicDetailsData?.relationshipStatus}
+                  >
+                    Married
+                  </option>
+                </select>
+                {/* <Select name="gender" options={["female", "male", "other"]} /> */}
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Date Of Birth' error={errors?.dateOfBirth}>
+                <input
+                  defaultValue={basicDetailsData?.dateOfBirth}
+                  {...register("dateOfBirth", {
+                    required: "date of birth is required",
+                  })}
+                  type='date'
+                  placeholder='Date Of Birth'
+                />
+              </Field>
+            </div>
+          </div>
+        </fieldset>
+        <div className='button-row'>
+          <button>Next {">"}</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default BasicDetail;
+
+
+
+
+
+
+
+
+
+
+import { BrowserRouter, Route, Routes } from "react-router-dom";
+import "./App.css";
+import BasicDetail from "./components/Steps/Basic";
+import EducationDetail from "./components/Steps/Education";
+import React from "react";
+import AppProvider from "./components/State";
+import { Stepper } from "./components/Stepper";
+import WorkExperience from "./components/Steps/Experience";
+import KnownLanguage from "./components/Steps/Languages";
+
+function App() {
+  return (
+    <React.StrictMode>
+      <BrowserRouter>
+        <Stepper />
+        <AppProvider>
+          <Routes>
+            <Route path='/' element={<BasicDetail />} />
+            <Route path='/education' element={<EducationDetail />} />
+            <Route path='/experience' element={<WorkExperience />} />
+            <Route path='/language' element={<KnownLanguage />} />
+          </Routes>
+        </AppProvider>
+      </BrowserRouter>
+    </React.StrictMode>
+  );
+}
+
+export default App;
+
+
+
+import { ReactNode } from "react";
+
+type FormWrapperProps = {
+  title: string;
+  children: ReactNode;
+};
+
+export function FormWrapper({ title, children }: FormWrapperProps) {
+  return (
+    <>
+      <h2 style={{ textAlign: "center", margin: 0, marginBottom: "2rem" }}>
+        {title}
+      </h2>
+      <div>{children}</div>
+    </>
+  );
+}
+
+
+
+import { ReactElement, useState } from "react";
+
+export function useMultistepForm(steps: ReactElement[]) {
+  const [currentStepIndex, setCurrentStepIndex] = useState(0);
+
+  function next() {
+    setCurrentStepIndex((i) => {
+      if (i >= steps.length - 1) return i;
+      return i + 1;
+    });
+  }
+
+  function prev() {
+    setCurrentStepIndex((i) => {
+      if (i <= 0) return i;
+      return i - 1;
+    });
+  }
+
+  function goTo(index: number) {
+    setCurrentStepIndex(index);
+  }
+
+  return {
+    currentStepIndex,
+    step: steps[currentStepIndex],
+    steps,
+    isFirstStep: currentStepIndex === 0,
+    isLastStep: currentStepIndex === steps.length - 1,
+    goTo,
+    next,
+    prev,
+  };
+}
+
+
+
+import React from "react";
+
+export const Field = ({ children, label, error }) => {
+  const id = getChildId(children);
+  return (
+    <>
+      <div className='flex flex-row justify-center mt-2'>
+        <label htmlFor={id} className='form-label '>
+          {label}
+        </label>
+        <div>{children}</div>
+      </div>
+      <div>{error && <small className='error'> {error.message}</small>}</div>
+    </>
+  );
+};
+
+export const getChildId = (children) => {
+  const child = React.Children.only(children);
+  if ("id" in child?.props) {
+    return child.props.id;
+  }
+};
+
+
+
+
+import { useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { Link, useNavigate } from "react-router-dom";
+import { Field } from "../Forms/Field";
+
+interface IEducationInput {
+  sscBoard: string;
+  sscPassingYear: string | number | Date;
+  sscPercentage: string | number;
+  hscBoard: string;
+  hscPassingYear: string | number | Date;
+  hscPercentage: string | number;
+  bachelorCourse: string;
+  bachelorUniversity: string;
+  bachelorPassingYear: string | number | Date;
+  bachelorPercentage: number;
+  masterCourse: string;
+  masterUniversity: string;
+  masterPassingYear: number | Date | string;
+  masterPercentage: number;
+}
+
+const EducationDetail = () => {
+  const [state, setState] = useState({});
+  const navigate = useNavigate();
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<IEducationInput>({ mode: "onChange" });
+
+  const onSubmit: SubmitHandler<IEducationInput> = (data) => {
+    localStorage.setItem("educationDetails", JSON.stringify(data));
+    setState({ ...state, ...data });
+    navigate("/experience");
+    console.log(data);
+  };
+
+  const educationDetailData = JSON.parse(
+    localStorage.getItem("educationDetails") as string
+  );
+
+  return (
+    <div className='App'>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <fieldset>
+          <legend>Educational Details </legend>
+          <h2>SSC Result</h2>
+          <hr className='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700' />
+          <div className='grid gap-6 mb-6 md:grid-cols-3'>
+            <div className='mb-5'>
+              <Field label='Name of Board' error={errors?.sscBoard}>
+                <input
+                  defaultValue={educationDetailData?.sscBoard}
+                  {...register("sscBoard", {
+                    required: "Name of board is required",
+                    maxLength: 40,
+                  })}
+                  placeholder='Name of board'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Passing Year' error={errors?.sscPassingYear}>
+                <input
+                  defaultValue={educationDetailData?.sscPassingYear}
+                  {...register("sscPassingYear", {
+                    required: "Passing Year is required",
+                    maxLength: 40,
+                  })}
+                  placeholder='Passing Year'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Percentage' error={errors?.sscPercentage}>
+                <input
+                  defaultValue={educationDetailData?.sscPercentage}
+                  {...register("sscPercentage", {
+                    required: "Percentage is required",
+                  })}
+                  placeholder='Percentage'
+                />
+              </Field>
+            </div>
+          </div>
+          <h2>HSC/Diploma Result</h2>
+          <hr className='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700' />
+          <div className='grid gap-6 mb-6 md:grid-cols-3'>
+            <div className='mb-5'>
+              <Field label=' name of Board' error={errors?.hscBoard}>
+                <input
+                  defaultValue={educationDetailData?.hscBoard}
+                  {...register("hscBoard", {
+                    required: "Name of board is required",
+                  })}
+                  placeholder='Name of board'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Passing Year' error={errors?.hscPassingYear}>
+                <input
+                  defaultValue={educationDetailData?.hscPassingYear}
+                  {...register("hscPassingYear", {
+                    required: "Passing year is required",
+                  })}
+                  placeholder='Passing Year'
+                  type='text'
+                  id='passingyear'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Percentage' error={errors?.hscPercentage}>
+                <input
+                  defaultValue={educationDetailData?.hscPercentage}
+                  {...register("hscPercentage", {
+                    required: "Percentage is required",
+                  })}
+                  placeholder='Percentage'
+                />
+              </Field>
+            </div>
+          </div>
+          <h2>Bachelor Degree</h2>
+          <hr className='h-px my-8 bg-gray-200 border-0 dark:bg-gray-700' />
+          <div className='grid gap-6 mb-6 md:grid-cols-4'>
+            <div className='mb-5'>
+              <Field label=' Course Name' error={errors?.bachelorCourse}>
+                <input
+                  defaultValue={educationDetailData?.bachelorCourse}
+                  {...register("bachelorCourse", {
+                    required: "Name of course is required",
+                  })}
+                  placeholder='Name of course'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field
+                label=' name of University'
+                error={errors?.bachelorUniversity}
+              >
+                <input
+                  defaultValue={educationDetailData?.bachelorUniversity}
+                  {...register("bachelorUniversity", {
+                    required: "Name of University required",
+                  })}
+                  placeholder='Name of University'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Passing Year' error={errors?.bachelorPassingYear}>
+                <input
+                  defaultValue={educationDetailData?.bachelorPassingYear}
+                  {...register("bachelorPassingYear", {
+                    required: "Passing year is required",
+                  })}
+                  placeholder='Passing Year'
+                  id='passing'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Percentage' error={errors?.bachelorPercentage}>
+                <input
+                  defaultValue={educationDetailData?.bachelorPercentage}
+                  {...register("bachelorPercentage", {
+                    required: "Percentage is required",
+                  })}
+                  placeholder='Percentage'
+                />
+              </Field>
+            </div>
+          </div>
+
+          <h2>Master Degree</h2>
+          <hr className='h-px my-8 text-gray-950 bg-gray-700 border-0' />
+          <div className='grid gap-6 mb-6 md:grid-cols-4'>
+            <div className='mb-5'>
+              <Field label=' Course Name' error={errors?.masterCourse}>
+                <input
+                  defaultValue={educationDetailData?.masterCourse}
+                  {...register("masterCourse", {
+                    required: "Name of course is required",
+                  })}
+                  placeholder='Name of course'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field
+                label=' name of University'
+                error={errors?.masterUniversity}
+              >
+                <input
+                  defaultValue={educationDetailData?.masterUniversity}
+                  {...register("masterUniversity", {
+                    required: "Name of University required",
+                  })}
+                  placeholder='Name of University'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Passing Year' error={errors?.masterPassingYear}>
+                <input
+                  defaultValue={educationDetailData?.masterPassingYear}
+                  {...register("masterPassingYear", {
+                    required: "Passing year is required",
+                  })}
+                  placeholder='Passing Year'
+                  id='passing'
+                />
+              </Field>
+            </div>
+            <div className='mb-5'>
+              <Field label='Percentage' error={errors?.masterPercentage}>
+                <input
+                  defaultValue={educationDetailData?.masterPercentage}
+                  {...register("masterPercentage", {
+                    required: "Percentage is required",
+                  })}
+                  placeholder='Percentage'
+                />
+              </Field>
+            </div>
+          </div>
+        </fieldset>
+        <div className='button-row'>
+          <Link
+            className={`btn btn-secondary w-40 rounded-lg bg-red-600 p-2 text-center text-sm text-white`}
+            to={"/"}
+          >
+            {"<"} Previous
+          </Link>
+          <button>Next {">"}</button>
+        </div>
+      </form>
+    </div>
+  );
+};
+
+export default EducationDetail;
